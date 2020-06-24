@@ -1,0 +1,17 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`basic simple: js 1`] = `
+"/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes,constantProperty,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+ */
+exports.__esModule = true;
+/**
+ * @return {string}
+ */
+function hello() {
+    return \\"hello world!\\";
+}
+console.log(hello());
+"
+`;
