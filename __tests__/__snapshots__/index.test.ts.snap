@@ -5,13 +5,64 @@ exports[`basic simple: js 1`] = `
  * @fileoverview added by tsickle
  * @suppress {checkTypes,constantProperty,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
  */
-exports.__esModule = true;
-/**
- * @return {string}
- */
-function hello() {
-    return \\"hello world!\\";
+class Timer {
+    /**
+     * @param {number} timeInterval
+     * @param {function(): void} callback
+     */
+    constructor(timeInterval, callback) {
+        this.timeInterval = timeInterval;
+        this.callback = callback;
+    }
+    /**
+     * @return {void}
+     */
+    cancelHandle() {
+        if (this.intervalHandle != null) {
+            clearInterval(this.intervalHandle);
+        }
+    }
+    /**
+     * @return {void}
+     */
+    startHandle() {
+        this.cancelHandle();
+        this.intervalHandle = window.setInterval((/**
+         * @return {void}
+         */
+        () => this.run()), this.timeInterval);
+    }
+    /**
+     * @private
+     * @return {void}
+     */
+    run() {
+        try {
+            this.callback();
+        }
+        catch (e) {
+            // do nothing
+        }
+    }
 }
-console.log(hello());
+/** @type {!Timer} */
+const instance = new Timer(1e3, (/**
+ * @return {void}
+ */
+() => console.info(\\"doing something\\")));
+((/** @type {?} */ (window)))[\\"mySDK\\"] = {
+    /**
+     * @return {void}
+     */
+    start() {
+        instance.startHandle();
+    },
+    /**
+     * @return {void}
+     */
+    stop() {
+        instance.cancelHandle();
+    },
+};
 "
 `;

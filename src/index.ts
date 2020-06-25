@@ -5,6 +5,8 @@ import * as tsickle from "tsickle";
 import ts from "typescript";
 import fs from "fs-extra";
 import path from "path";
+import { fixCode } from "./fix";
+import { tsToJS, jsToTS, extractGoogRequireType } from "./utils";
 
 export default (options: Options = {}): Plugin => {
   const emitted = new Map<string, string>();
@@ -14,6 +16,12 @@ export default (options: Options = {}): Plugin => {
     options.exclude,
   );
 
+  const tsconfig = "tsconfig.json";
+  const externDir = "dist/externs";
+  const externFile = path.resolve(externDir, "externs.js");
+  const requireTypeDefs: string[] = [];
+  fs.ensureDirSync(externDir);
+
   const plugin: Plugin = {
     name: "tsickle",
 
@@ -22,13 +30,15 @@ export default (options: Options = {}): Plugin => {
 
       const sourceFileName = id.replace(/\\/g, "/");
 
-      // TODO: Proper config search
-      const loaded = ts.readConfigFile(path.join(process.cwd(), "tsconfig.json"), path =>
-        fs.readFileSync(path, "utf8"),
-      );
+      const loaded = ts.readConfigFile(tsconfig, file => fs.readFileSync(file, "utf8"));
 
-      const { compilerOptions } = loaded.config as { compilerOptions: ts.CompilerOptions };
-      compilerOptions.moduleResolution = ts.ModuleResolutionKind.NodeJs;
+      const { options: compilerOptions } = ts.parseJsonConfigFileContent(
+        loaded.config,
+        ts.sys,
+        ".",
+        {},
+        tsconfig,
+      );
 
       const compilerHost = ts.createCompilerHost(compilerOptions);
       const program = ts.createProgram([sourceFileName], compilerOptions, compilerHost);
@@ -48,18 +58,42 @@ export default (options: Options = {}): Plugin => {
         untyped: false,
       };
 
-      tsickle.emitWithTsickle(
+      const output = tsickle.emitWithTsickle(
         program,
         tsickleHost,
         compilerHost,
         compilerOptions,
         undefined,
-        (path: string, contents: string) => emitted.set(path, contents),
+        (file: string, code: string) => emitted.set(file, code),
       );
 
-      const file = emitted.values().next();
+      const sourceFileAsJs = tsToJS(sourceFileName);
+      for (const [file, source] of emitted) {
+        if (!sourceFileAsJs.includes(file)) continue;
 
-      return { code: file.value as string };
+        const { stripped, defs } = extractGoogRequireType(source);
+        if (defs) requireTypeDefs.push(...defs);
+
+        const extern = output.externs[jsToTS(file)];
+        if (extern != null) {
+          // console.log(`appending extern for ${file} to (${externFile}) ::\n${extern}\n`);
+          fs.appendFileSync(externFile, extern);
+        }
+
+        const code = fixCode(stripped);
+        // console.log("FIXED CODE:: \n", code);
+
+        return { code };
+      }
+
+      return null;
+    },
+
+    generateBundle(_, bundle) {
+      bundle;
+      // const chunks = Object.values(bundle).filter(f => f.type === "chunk") as OutputChunk[];
+      // for (const chunk of chunks)
+      //   chunk.code = "var goog" + "\n" + requireTypeDefs.join("\n") + chunk.code;
     },
   };
 
