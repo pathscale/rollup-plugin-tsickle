@@ -1,6 +1,6 @@
 {
   "name": "@pathscale/rollup-plugin-tsickle",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Prepare TypeScript for Closure Compiler using tsickle",
   "keywords": [
     "rollup",
@@ -73,14 +73,14 @@
     "jest-circus": "^26.1.0",
     "lint-staged": "^10.2.11",
     "prettier": "^2.0.5",
-    "rollup": "^2.18.0",
+    "rollup": "^2.18.1",
     "rollup-plugin-dts": "^1.4.7",
     "rollup-plugin-node-externals": "^2.2.0",
     "shx": "^0.3.2",
     "ts-jest": "^26.1.1"
   },
   "peerDependencies": {
-    "rollup": "^2.18.0"
+    "rollup": "^2.18.1"
   },
   "engines": {
     "node": ">=10"
