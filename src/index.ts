@@ -30,7 +30,7 @@ export default (options: Options = {}): Plugin => {
       if (!isIncluded(id)) return;
       console.log(`TSICKLE - INCLUDED (${humanlizePath(id)})`);
 
-      const sourceFileName = id.replace(/\\/g, "/");
+      const sourceFileName = path.resolve(id.replace(/\\/g, "/"));
 
       const loaded = ts.readConfigFile(tsconfig, file => fs.readFileSync(file, "utf8"));
 
