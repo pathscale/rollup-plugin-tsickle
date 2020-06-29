@@ -1,10 +1,11 @@
+import path from "path";
+import fs from "fs-extra";
+import JSZip from "jszip";
 import { createFilter } from "@rollup/pluginutils";
 import { Plugin } from "rollup";
 import { Options } from "./types";
 import * as tsickle from "tsickle";
-import ts from "typescript";
-import fs from "fs-extra";
-import path from "path";
+import * as ts from "typescript";
 import { tsToJs } from "./utils";
 
 export default (options: Options = {}): Plugin => {
@@ -13,6 +14,7 @@ export default (options: Options = {}): Plugin => {
     options.exclude,
   );
 
+  const zip = new JSZip();
   const emitted = new Map<string, string>();
   const tsconfig = "tsconfig.json";
 
@@ -39,6 +41,7 @@ export default (options: Options = {}): Plugin => {
         tsconfig,
       );
 
+      console.log("TSICKLE - OPTIONS:\n", compilerOptions);
       compilerOptions.allowJs = true;
       compilerOptions.checkJs = false;
 
@@ -75,13 +78,23 @@ export default (options: Options = {}): Plugin => {
 
         console.log(
           `TSICKLE - PROCESSED (${path.relative(process.cwd(), file)}):\n`,
-          `${source  }\n\n`,
+          `${source}\n\n`,
         );
 
         return { code: source };
       }
 
       return null;
+    },
+
+    renderChunk(code, chunk) {
+      zip.file(chunk.fileName, code);
+      return null;
+    },
+
+    async generateBundle() {
+      const source = await zip.generateAsync({ type: "uint8array" });
+      this.emitFile({ type: "asset", name: "tsickle.zip", source });
     },
   };
 

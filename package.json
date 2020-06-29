@@ -1,6 +1,6 @@
 {
   "name": "@pathscale/rollup-plugin-tsickle",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "Prepare TypeScript for Closure Compiler using tsickle",
   "keywords": [
     "rollup",
@@ -38,6 +38,7 @@
   "dependencies": {
     "@rollup/pluginutils": "^3.1.0",
     "fs-extra": "^9.0.1",
+    "jszip": "^3.5.0",
     "tsickle": "^0.38.1",
     "tslib": "^2.0.0",
     "typescript": "^3.9.5"
