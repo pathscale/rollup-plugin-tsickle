@@ -6,7 +6,7 @@ import { Plugin } from "rollup";
 import { Options } from "./types";
 import * as tsickle from "tsickle";
 import * as ts from "typescript";
-import { tsToJs } from "./utils";
+import { tsToJs, humanlizePath } from "./utils";
 
 export default (options: Options = {}): Plugin => {
   const isIncluded = createFilter(
@@ -28,6 +28,7 @@ export default (options: Options = {}): Plugin => {
 
     transform(_, id) {
       if (!isIncluded(id)) return;
+      console.log(`TSICKLE - INCLUDED (${humanlizePath(id)})`);
 
       const sourceFileName = id.replace(/\\/g, "/");
 
@@ -41,9 +42,8 @@ export default (options: Options = {}): Plugin => {
         tsconfig,
       );
 
-      console.log("TSICKLE - OPTIONS:\n", compilerOptions);
       compilerOptions.allowJs = true;
-      compilerOptions.checkJs = false;
+      compilerOptions.checkJs = true;
 
       const compilerHost = ts.createCompilerHost(compilerOptions);
       const program = ts.createProgram([sourceFileName], compilerOptions, compilerHost);
@@ -75,12 +75,10 @@ export default (options: Options = {}): Plugin => {
       const sourceFileAsJs = tsToJs(sourceFileName);
       for (const [file, source] of emitted) {
         if (!sourceFileAsJs.includes(file)) continue;
-
-        console.log(
-          `TSICKLE - PROCESSED (${path.relative(process.cwd(), file)}):\n`,
-          `${source}\n\n`,
-        );
-
+        zip.file(`individual/${path.basename(file)}`, source);
+        const sourceRel = humanlizePath(sourceFileName);
+        const resRel = path.basename(sourceFileAsJs);
+        console.log(`TSICKLE - PROCESSED (${sourceRel} to ${resRel})`);
         return { code: source };
       }
 
