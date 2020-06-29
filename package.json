@@ -1,6 +1,6 @@
 {
   "name": "@pathscale/rollup-plugin-tsickle",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "Prepare TypeScript for Closure Compiler using tsickle",
   "keywords": [
     "rollup",
@@ -54,7 +54,7 @@
     "@rollup/plugin-json": "^4.1.0",
     "@rollup/plugin-node-resolve": "^8.1.0",
     "@rollup/plugin-replace": "^2.3.3",
-    "@rollup/plugin-typescript": "^5.0.0",
+    "@rollup/plugin-typescript": "^5.0.1",
     "@types/fs-extra": "^9.0.1",
     "@types/jest": "^26.0.3",
     "@types/node": "*",
@@ -64,7 +64,7 @@
     "eslint": "^7.3.1",
     "eslint-config-prettier": "^6.11.0",
     "eslint-import-resolver-node": "^0.3.4",
-    "eslint-plugin-import": "^2.21.2",
+    "eslint-plugin-import": "^2.22.0",
     "eslint-plugin-jest": "^23.17.1",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-unicorn": "^20.1.0",

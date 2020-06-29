@@ -4,18 +4,18 @@ import { Options } from "./types";
 import * as tsickle from "tsickle";
 import ts from "typescript";
 import fs from "fs-extra";
-// import path from "path";
-import { tsToJs, extractGoogRequireType } from "./utils";
+import path from "path";
+import { tsToJs } from "./utils";
 
 export default (options: Options = {}): Plugin => {
-  const emitted = new Map<string, string>();
-
   const isIncluded = createFilter(
-    options.include ?? ["**/*.ts", "**/*.tsx", "**/*.vue"],
+    options.include ?? ["**/*.ts", "**/*.tsx", "**/*.js", "**/*.jsx"],
     options.exclude,
   );
 
+  const emitted = new Map<string, string>();
   const tsconfig = "tsconfig.json";
+
   // TODO: Externs are broken
   // const externDir = "dist/externs";
   // const externFile = path.resolve(externDir, "externs.js");
@@ -39,6 +39,9 @@ export default (options: Options = {}): Plugin => {
         tsconfig,
       );
 
+      compilerOptions.allowJs = true;
+      compilerOptions.checkJs = false;
+
       const compilerHost = ts.createCompilerHost(compilerOptions);
       const program = ts.createProgram([sourceFileName], compilerOptions, compilerHost);
 
@@ -54,7 +57,7 @@ export default (options: Options = {}): Plugin => {
         transformDecorators: true,
         transformTypesToClosure: true,
         typeBlackListPaths: new Set(),
-        untyped: false,
+        untyped: true,
       };
 
       tsickle.emitWithTsickle(
@@ -69,8 +72,13 @@ export default (options: Options = {}): Plugin => {
       const sourceFileAsJs = tsToJs(sourceFileName);
       for (const [file, source] of emitted) {
         if (!sourceFileAsJs.includes(file)) continue;
-        const { stripped } = extractGoogRequireType(source);
-        return { code: stripped };
+
+        console.log(
+          `TSICKLE - PROCESSED (${path.relative(process.cwd(), file)}):\n`,
+          `${source  }\n\n`,
+        );
+
+        return { code: source };
       }
 
       return null;

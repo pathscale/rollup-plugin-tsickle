@@ -10,3 +10,4 @@ Move-Item $projRoot\rollup-plugin-tsickle\dist $projRoot\$target\node_modules\@p
 
 Set-Location $projRoot\$target\
 pnpm run $command
+.\node_modules\.bin\serve dist
