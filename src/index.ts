@@ -28,11 +28,9 @@ export default (options: Options = {}): Plugin => {
 
     transform(_, id) {
       if (!isIncluded(id)) return;
-      console.log(`TSICKLE - INCLUDED (${humanlizePath(id)})`);
+      options.debug && console.log(`TSICKLE - INCLUDED (${humanlizePath(id)})`);
 
-      const sourceFileName = /^(?:\/|(?:[A-Za-z]:)?[/\\|])/.test(id)
-        ? id.replace(/\\/g, "/")
-        : path.resolve(process.cwd(), id).replace(/\\/g, "/");
+      const sourceFileName = id.replace(/\\/g, "/");
 
       const loaded = ts.readConfigFile(tsconfig, file => fs.readFileSync(file, "utf8"));
 
@@ -77,10 +75,10 @@ export default (options: Options = {}): Plugin => {
       const sourceFileAsJs = tsToJs(sourceFileName);
       for (const [file, source] of emitted) {
         if (!sourceFileAsJs.includes(file)) continue;
-        zip.file(`individual/${path.basename(file)}`, source);
+        options.debug && zip.file(`individual/${path.basename(file)}`, source);
         const sourceRel = humanlizePath(sourceFileName);
         const resRel = path.basename(sourceFileAsJs);
-        console.log(`TSICKLE - PROCESSED (${sourceRel} to ${resRel})`);
+        options.debug && console.log(`TSICKLE - PROCESSED (${sourceRel} to ${resRel})`);
         return { code: source };
       }
 
@@ -88,13 +86,17 @@ export default (options: Options = {}): Plugin => {
     },
 
     renderChunk(code, chunk) {
-      zip.file(chunk.fileName, code);
+      options.debug && zip.file(chunk.fileName, code);
       return null;
     },
 
     async generateBundle() {
-      const source = await zip.generateAsync({ type: "uint8array" });
-      this.emitFile({ type: "asset", name: "tsickle.zip", source });
+      options.debug &&
+        this.emitFile({
+          type: "asset",
+          name: "tsickle.zip",
+          source: await zip.generateAsync({ type: "uint8array" }),
+        });
     },
   };
 
