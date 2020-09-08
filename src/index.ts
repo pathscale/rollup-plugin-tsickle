@@ -38,12 +38,16 @@ export default (options: Options = {}): Plugin => {
       };
     },
 
-    transform(_, id) {
+    transform(code, id) {
       if (!isIncluded(id)) return;
       options.debug && console.log(`TSICKLE - INCLUDED (${humanlizePath(id)})`);
 
       const sourceFileName = id.replace(/\\/g, "/");
       const program = ts.createProgram([sourceFileName], compilerOptions, compilerHost);
+
+      const gsf = program.getSourceFile.bind(program);
+      program.getSourceFile = name => ({ ...gsf(name.split("?")[0])!, text: code });
+
       tsickle.emit(program, tsickleHost, (file: string, code: string) => emitted.set(file, code));
 
       const sourceFileAsJs = tsToJs(sourceFileName);
