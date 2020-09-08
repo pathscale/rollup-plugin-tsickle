@@ -56,7 +56,8 @@ export default (options: Options = {}): Plugin => {
         return { code: source };
       }
 
-      options.debug && console.log(`TSICKLE - MISSED (${humanlizePath(id)})`);
+      options.debug &&
+        console.log(`TSICKLE - MISSED (${humanlizePath(id)} in ${JSON.stringify(emitted)})`);
 
       return null;
     },
