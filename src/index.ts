@@ -38,16 +38,18 @@ export default (options: Options = {}): Plugin => {
       };
     },
 
-    transform(code, id) {
+    transform(_, id) {
       if (!isIncluded(id)) return;
       options.debug && console.log(`TSICKLE - INCLUDED (${humanlizePath(id)})`);
 
+      const _id = id.split("?")[0];
+      if (_id !== id && /\.vue$/i.test(_id)) {
+        options.debug && console.log(`TSICKLE - VUE SFC (${humanlizePath(id)})`);
+        throw new Error("TS inside Vue SFC is not supported for now");
+      }
+
       const sourceFileName = id.replace(/\\/g, "/");
       const program = ts.createProgram([sourceFileName], compilerOptions, compilerHost);
-
-      const gsf = program.getSourceFile.bind(program);
-      program.getSourceFile = name => ({ ...gsf(name.split("?")[0])!, text: code });
-
       tsickle.emit(program, tsickleHost, (file: string, code: string) => emitted.set(file, code));
 
       const sourceFileAsJs = tsToJs(sourceFileName);
