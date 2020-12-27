@@ -26,6 +26,11 @@ export default (options: Options = {}): Plugin => {
       const loaded = ts.readConfigFile(tsconfig, file => fs.readFileSync(file, "utf8"));
       const parsed = ts.parseJsonConfigFileContent(loaded.config, ts.sys, ".", {}, tsconfig);
       compilerOptions = parsed.options;
+
+      if (compilerOptions.paths)
+        for (const [from, to] of Object.entries(compilerOptions.paths))
+          compilerOptions.paths[from] = to.map(t => path.resolve(t).replace(/\\/g, "/"));
+
       compilerHost = ts.createCompilerHost(compilerOptions);
       tsickleHost = {
         shouldSkipTsickleProcessing: () => false,

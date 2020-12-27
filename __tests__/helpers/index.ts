@@ -89,8 +89,10 @@ export interface TestData extends WriteData {
 }
 
 export function validate(data: TestData): void {
+  // eslint-disable-next-line jest/valid-title
   test(data.title, async () => {
     if (data.shouldFail) {
+      // eslint-disable-next-line jest/no-conditional-expect
       await expect(write(data)).rejects.toThrowErrorMatchingSnapshot();
       return;
     }
@@ -110,6 +112,7 @@ export function validate(data: TestData): void {
 }
 
 export function validateMany(groupName: string, testDatas: TestData[]): void {
+  // eslint-disable-next-line jest/valid-title
   describe(groupName, () => {
     for (const testData of testDatas) {
       validate({ ...testData, outDir: path.join(groupName, testData.title) });

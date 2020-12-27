@@ -1,41 +1,20 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`basic simple: js 1`] = `
-"/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes,constantProperty,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
- */
-class Timer {
-    /**
-     * @param {number} timeInterval
-     * @param {function(): void} callback
-     */
+"class Timer {
     constructor(timeInterval, callback) {
         this.timeInterval = timeInterval;
         this.callback = callback;
     }
-    /**
-     * @return {void}
-     */
     cancelHandle() {
         if (this.intervalHandle != null) {
             clearInterval(this.intervalHandle);
         }
     }
-    /**
-     * @return {void}
-     */
     startHandle() {
         this.cancelHandle();
-        this.intervalHandle = window.setInterval((/**
-         * @return {void}
-         */
-        () => this.run()), this.timeInterval);
+        this.intervalHandle = window.setInterval(() => this.run(), this.timeInterval);
     }
-    /**
-     * @private
-     * @return {void}
-     */
     run() {
         try {
             this.callback();
@@ -45,21 +24,11 @@ class Timer {
         }
     }
 }
-/** @type {!Timer} */
-const instance = new Timer(1e3, (/**
- * @return {void}
- */
-() => console.info(\\"doing something\\")));
-((/** @type {?} */ (window)))[\\"mySDK\\"] = {
-    /**
-     * @return {void}
-     */
+const instance = new Timer(1e3, () => console.info(\\"doing something\\"));
+window[\\"mySDK\\"] = {
     start() {
         instance.startHandle();
     },
-    /**
-     * @return {void}
-     */
     stop() {
         instance.cancelHandle();
     },

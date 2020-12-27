@@ -1,4 +1,4 @@
-$target = "example-tailwind"
+$target = "revenge.studio"
 $command = "build"
 $projRoot = "D:\CodeProjects"
 
@@ -9,5 +9,6 @@ Remove-Item -Recurse -Force -ErrorAction SilentlyContinue $projRoot\$target\node
 Move-Item $projRoot\rollup-plugin-tsickle\dist $projRoot\$target\node_modules\@pathscale\rollup-plugin-tsickle\dist
 
 Set-Location $projRoot\$target\
+# npm link
 pnpm run $command
 .\node_modules\.bin\serve dist
